@@ -1,7 +1,7 @@
 #!/bin/bash
 # Function to find subnet and allocation ID by instance name
 find_subnet_and_allocation_id() {
-  INSTANCE_NAME="$1"
+  INSTANCE_NAME="owasp-juice2021"
   
   # Find the subnet ID based on the instance name
   SUBNET_ID=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=$INSTANCE_NAME" --query 'Reservations[].Instances[].SubnetId' --output text)
@@ -23,7 +23,6 @@ find_subnet_and_allocation_id() {
 
 # Function to add a NAT Gateway
 add_nat_gateway() {
-    read -p "Enter the name of the instance: " INSTANCE_NAME
     find_subnet_and_allocation_id "$INSTANCE_NAME"
     echo "Creating a NAT Gateway..."
     NAT_GATEWAY_ID=$(aws ec2 create-nat-gateway --subnet-id "$SUBNET_ID" --allocation-id "$EIP_ALLOCATION_ID" | jq -r '.NatGateway.NatGatewayId')
@@ -39,7 +38,6 @@ add_nat_gateway() {
 
 # Function to remove a NAT Gateway
 remove_nat_gateway() {
-    read -p "Enter the name of the instance: " INSTANCE_NAME
     find_subnet_and_allocation_id "$INSTANCE_NAME"
     echo "Deleting NAT Gateway with ID: $NAT_GATEWAY_ID"
     aws ec2 delete-nat-gateway --nat-gateway-id "$NAT_GATEWAY_ID"
