@@ -1,32 +1,4 @@
 #!/bin/bash
-
-# Main menu
-echo "NAT Gateway Management Script"
-echo "1. Add NAT Gateway"
-echo "2. Remove NAT Gateway"
-echo "3. Quit"
-
-read -p "Select an option (1/2/3): " choice
-
-case $choice in
-  1)
-    add_nat_gateway
-    ;;
-  2)
-    read -p "Enter the NAT Gateway ID to remove: " NAT_GATEWAY_ID
-    remove_nat_gateway
-    ;;
-  3)
-    echo "Exiting script."
-    exit 0
-    ;;
-  *)
-    echo "Invalid option. Please select 1, 2, or 3."
-    exit 1
-    ;;
-esac
-
-
 # Function to find subnet and allocation ID by instance name
 find_subnet_and_allocation_id() {
   INSTANCE_NAME="owasp-juice2021"
