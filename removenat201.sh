@@ -38,16 +38,35 @@ add_nat_gateway() {
 
 # Function to remove a NAT Gateway
 remove_nat_gateway() {
-    find_subnet_and_allocation_id "$INSTANCE_NAME"
-    echo "Deleting NAT Gateway with ID: $NAT_GATEWAY_ID"
-    aws ec2 delete-nat-gateway --nat-gateway-id "$NAT_GATEWAY_ID"
-    
-    echo "Waiting for the NAT Gateway to be deleted..."
-    aws ec2 wait nat-gateway-deleted --nat-gateway-ids "$NAT_GATEWAY_ID"
+  AWS_REGION="us-east-1"  # US East (N. Virginia)
+
+  # Find the NAT Gateway ID
+  NAT_GATEWAY_ID=$(aws ec2 describe-nat-gateways --region $AWS_REGION --query "NatGateways[0].NatGatewayId" --output text)
+
+  # Check if NAT Gateway ID is empty
+  if [ -z "$NAT_GATEWAY_ID" ]; then
+    echo "No NAT Gateway found in region $AWS_REGION."
+    exit 1
+  fi
+
+  echo "NAT Gateway ID found: $NAT_GATEWAY_ID"
+
+  # Delete the NAT Gateway
+  echo "Deleting NAT Gateway with ID $NAT_GATEWAY_ID..."
+  aws ec2 delete-nat-gateway --region $AWS_REGION --nat-gateway-id $NAT_GATEWAY_ID
+
+  # Check the deletion status
+  deletion_status=$?
+  if [ $deletion_status -eq 0 ]; then
+    echo "NAT Gateway with ID $NAT_GATEWAY_ID deleted successfully."
+  else
+    echo "Failed to delete NAT Gateway with ID $NAT_GATEWAY_ID."
+    exit 1
+  fi
     
     # Remove the route from your route table here
     
-    echo "NAT Gateway deletion complete."
+  echo "NAT Gateway deletion complete."
 }
 
 # Main menu
