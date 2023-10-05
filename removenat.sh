@@ -63,7 +63,6 @@ case $choice in
     add_nat_gateway
     ;;
   2)
-    read -p "Enter the NAT Gateway ID to remove: " NAT_GATEWAY_ID
     remove_nat_gateway
     ;;
   3)
